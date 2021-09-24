@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "outDir": "./migrate",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "declaration": false,
+    "target": "es6",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "lib": [
+      "es5",
+      "es2017",
+      "dom"
+    ],
+    "baseUrl": "src",
+    "module": "commonjs"
+  },
+    "include": [
+      "./src/config/",
+      "./src/models/",
+      "./src/seeders/",
+      "./src/migrations/"
+    ],
+    "exclude": [
+      "src/**/*.test.ts",
+      "src/**/*.spec.ts"
+    ]
+  }
