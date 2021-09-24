@@ -1,0 +1,41 @@
+version: '3'
+services:
+  spkz-node:
+    build:
+      context: ./
+      dockerfile: Dockerfile.local
+    image: spkz-node
+    container_name: spkz-node
+    volumes:
+      - ./:/home/api
+    environment:
+      - DB_NAME=spkz-node
+      - DB_USER=spkz
+      - DB_PASSWORD=spkz
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_SCHEMA=public
+      - DB_LOGGING=false
+      - DEBUG=true
+      - NODE_ENV=development
+      - CONTEXT_PATH=/api
+      - PORT=3000
+      - NETWORK_ID=80001
+      - CHAIN_ID=80001
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:13.4
+    container_name: postgres
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=spkz
+      - POSTGRES_PASSWORD=spkz
+      - POSTGRES_DB=spkz-node
+    ports:
+      - 5432:5432
+volumes:
+  postgres-volume:

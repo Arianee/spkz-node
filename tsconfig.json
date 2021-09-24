@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "outDir": "./dist",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "declaration": true,
+    "target": "es6",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "lib": [
+      "es5",
+      "es2017",
+      "dom"
+    ],
+    "baseUrl": "src",
+    "module": "commonjs"
+  },
+    "include": [
+      "./src/"
+    ],
+    "exclude": [
+      "src/**/*.test.ts",
+      "src/**/*.spec.ts"
+    ]
+  }
