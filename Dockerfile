@@ -7,9 +7,7 @@ COPY migrate ./migrate
 COPY package.json .
 COPY .sequelizerc .
 
-COPY chain.config.json .
-
-RUN npm ci --only=prod
+RUN npm i --only=prod
 
 
 EXPOSE 80
