@@ -12,7 +12,7 @@ services:
       - DB_NAME=spkz-node
       - DB_USER=spkz
       - DB_PASSWORD=spkz
-      - DB_HOST=postgres
+      - DB_HOST=postgres-spkz-node
       - DB_PORT=5432
       - DB_SCHEMA=public
       - DB_LOGGING=false
@@ -26,11 +26,11 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - postgres
       - redis-ws
-  postgres:
+      - postgres-spkz-node
+  postgres-spkz-node:
     image: postgres:13.4
-    container_name: postgres
+    container_name: postgres-spkz-node
     volumes:
       - postgres-volume:/var/lib/postgresql/data
     environment:
