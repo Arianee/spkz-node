@@ -22,6 +22,8 @@ module.exports = {
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
+    "no-console": [2,{ "allow": ["info","warn","error","assert"] } ],
+
   },
   settings: {
     'import/parsers': {

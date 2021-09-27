@@ -1,4 +1,4 @@
-import {MessageService} from './services/message.service';
+import { MessageService } from './services/message.service';
 
 const express = require('express');
 
@@ -16,5 +16,4 @@ app.post(`${process.env.CONTEXT_PATH}/spkz/rpc`, (new MessageService().getMessag
 
 app.listen(port, async () => {
   console.info(`spkz-node listening at port:${port}`);
-
 });
