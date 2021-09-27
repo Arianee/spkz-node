@@ -1,0 +1,11 @@
+FROM node:alpine3.14
+
+WORKDIR /home/api
+
+COPY src ./src
+COPY package.json .
+
+RUN npm i
+
+EXPOSE 3000
+ENTRYPOINT ["npm", "run", "start"]
