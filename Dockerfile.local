@@ -5,8 +5,6 @@ WORKDIR /home/api
 COPY src ./src
 COPY package.json .
 
-COPY chain.config.json .
-
 RUN npm i
 
 EXPOSE 3000

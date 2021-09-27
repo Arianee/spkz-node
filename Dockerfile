@@ -2,15 +2,15 @@ FROM node:alpine3.14
 
 WORKDIR /home/api
 
-COPY dist ./src
-COPY migrate ./migrate
 COPY package.json .
+COPY package-lock.json .
 COPY .sequelizerc .
+COPY ./src ./
 
-COPY chain.config.json .
+COPY tsconfig.json .
+COPY tsconfig.migrate.json .
 
-RUN npm ci --only=prod
+RUN npm ci
+RUN npm run build
 
-
-EXPOSE 80
 ENTRYPOINT ["npm", "run", "start:prod"]
