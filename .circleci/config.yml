@@ -102,6 +102,8 @@ jobs:
       - run:
           name: test
           command: npm run test
+      - store_artifacts:
+          path: coverage
 
   build:
     docker:
