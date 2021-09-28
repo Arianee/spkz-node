@@ -5,7 +5,7 @@ WORKDIR /home/api
 COPY package.json .
 COPY package-lock.json .
 COPY .sequelizerc .
-COPY ./src ./
+COPY ./src ./src
 
 COPY tsconfig.json .
 COPY tsconfig.migrate.json .
