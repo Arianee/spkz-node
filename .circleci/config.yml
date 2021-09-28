@@ -102,6 +102,8 @@ jobs:
       - run:
           name: test
           command: npm run test
+      - store_artifacts:
+          path: coverage
 
   build:
     docker:
@@ -161,7 +163,7 @@ jobs:
           name: push tag && update version
           command: node ./.circleci/update-version.js ${VERSION}
 
-  package-master:
+  package-main:
     docker:
       - image: cimg/node:14.17.6
     steps:
@@ -224,13 +226,13 @@ workflows:
             - build
           filters:
             branches:
-              only: master
-      - package-master:
+              only: main
+      - package-main:
           requires:
             - release
           filters:
             branches:
-              only: master
+              only: main
       - deploy-develop:
           requires:
             - package-develop
@@ -240,28 +242,28 @@ workflows:
       - approval-uat:
           type: approval
           requires:
-            - package-master
+            - package-main
           filters:
             branches:
-              only: master
+              only: main
       - deploy-uat:
           requires:
             - approval-uat
           filters:
             branches:
-              only: master
+              only: main
       - approval-prod:
           type: approval
           requires:
-            - package-master
+            - package-main
           filters:
             branches:
-              only: master
+              only: main
       - deploy-prod:
           requires:
             - approval-prod
           filters:
             branches:
-              only: master
+              only: main
 
 
