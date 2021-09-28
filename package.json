@@ -12,7 +12,12 @@
     "lint": "gitool -cl=1 && eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "test": "npm run lint && jest --runInBand --coverage",
-    "test:u": "jest --runInBand --u --coverage"
+    "test:u": "jest --runInBand --u --coverage",
+    "changelog": "gitool -po=./CHANGELOG.md --pn='Spkz node'",
+    "release": "npm run release:minor",
+    "release:minor": "npm version minor --no-git-tag-version",
+    "release:patch": "npm version patch --no-git-tag-version",
+    "release:major": "npm version major --no-git-tag-version"
   },
   "repository": {
     "type": "git",
