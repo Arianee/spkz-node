@@ -14,13 +14,13 @@ const commitAndRelease = (version) => {
     }
     console.info('Version type (patch/minor):', versionType);
     exec(
-        `npm run changelog -- --v=${version} && git add . && git commit -m "release(changelog): Update changelog [CI SKIP]" && git push origin HEAD:master && git tag -a v${version} -m "release(changelog): Update changelog [CI SKIP] " && git push origin v${version}`,
+        `npm run changelog -- --v=${version} && git add . && git commit -m "release(changelog): Update changelog [CI SKIP]" && git push origin HEAD:main && git tag -a v${version} -m "release(changelog): Update changelog [CI SKIP] " && git push origin v${version}`,
         (error, stdout, stderr) => {
             if (error) {
                 console.error(stderr);
                 throw error;
             }
-            console.info(`Changelog and tag pushed on master for v${version}`);
+            console.info(`Changelog and tag pushed on main for v${version}`);
             if (versionType === 'patch') {
                 exec(
                     `npm run release && git add . && `
