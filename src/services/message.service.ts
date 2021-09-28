@@ -1,6 +1,7 @@
 import { SPKZJSONRPC } from '@arianee/spkz-sdk';
 import { NetworkParameters } from '@arianee/spkz-sdk/models/jsonrpc/networkParameters';
 import { Message } from '../models/message.model';
+import redisService from './redis.service';
 
 export class MessageService {
   private messagesJSONRPC;
@@ -31,6 +32,7 @@ export class MessageService {
             blockchainWallet: 'test',
           };
           const message = await Message.create(value);
+          redisService.publish('spkz-message', JSON.stringify(message));
           return Promise.resolve(message);
         },
       }).build();
