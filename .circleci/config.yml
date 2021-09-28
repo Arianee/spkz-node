@@ -1,0 +1,267 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+# Use a package of configuration called an orb.
+orbs:
+  node: circleci/node@4.5.1
+  jq: circleci/jq@2.2
+  gcp-cli: circleci/gcp-cli@2.2.0
+  # Declare a dependency on the welcome-orb
+
+commands:
+  gcp-connect:
+    description: "connect to Google Cloud"
+    parameters:
+      project:
+        type: string
+        default: "spkz-327309"
+    steps:
+      - run:
+          name: show parameters
+          command: echo << parameters.project >>
+      - run:
+          name: add gcp project to ENV
+          command: echo "export GOOGLE_PROJECT_ID=<< parameters.project >>" >> $BASH_ENV
+      - gcp-cli/install
+      - run:
+          name: initialize gcloud CLI to connect to Google Cloud
+          command: |
+            # Store service account
+
+            echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+
+
+            # Initialize gcloud CLI
+
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+
+            gcloud --quiet config set project $GOOGLE_PROJECT_ID
+
+
+            if [ "$GOOGLE_COMPUTE_ZONE" != "" ]; then
+              gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE
+            fi
+            if [ "$GOOGLE_COMPUTE_REGION" != "" ]; then
+              gcloud --quiet config set compute/region $GOOGLE_COMPUTE_REGION
+            fi
+  login-npm:
+    description: "login to node"
+    steps:
+      - run:
+          name: login to npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+  deploy:
+    description: "deploy node"
+    parameters:
+      project:
+        type: string
+        default: "spkz-327309"
+      snapshot:
+        type: boolean
+        default: true
+      service:
+        type: string
+        default: "node-spkz-dev"
+      password-database:
+        type: string
+        default: $DB_PASS_DEV
+      name-database:
+        type: string
+        default: "node-spkz-dev"
+      instance-database:
+        type: string
+        default: "node-spkz-dev"
+
+    steps:
+      - run:
+          name: show parameters
+          command: echo << parameters.project >> && echo << parameters.snapshot >> && echo << parameters.service >>
+      - checkout
+      - jq/install
+      - login-npm
+      - gcp-connect
+      - run:
+          name: version tag
+          command: |
+            if [ << parameters.snapshot >> = true ]; then
+              export VERSION_TAG=`cat ./package.json | jq -r .version`-SNAPSHOT && echo "export VERSION_TAG=$VERSION_TAG" >> $BASH_ENV
+            else
+              export VERSION_TAG=`cat ./package.json | jq -r .version` && echo "export VERSION_TAG=$VERSION_TAG" >> $BASH_ENV
+            fi
+      - run:
+          name: gcloud run deploy
+          command: gcloud run deploy << parameters.service >> --image gcr.io/spkz-327309/spkz-node:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432 --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
+
+jobs:
+  test:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - checkout
+      - login-npm
+      - node/install-packages
+      - run:
+          name: test
+          command: npm run test
+
+  build:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - checkout
+      - login-npm
+      - node/install-packages
+      - run:
+          name: build
+          command: npm run build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - dist
+            - migrate
+
+  package-develop:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+        - checkout
+        - node/install-packages
+        - jq/install
+        - gcp-connect
+        - attach_workspace:
+              at: ./
+        - run:
+            name: version snapshot
+            command: export VERSION_SNAPSHOT=`cat ./package.json | jq -r .version`-SNAPSHOT && echo "export VERSION_SNAPSHOT=$VERSION_SNAPSHOT" >> $BASH_ENV
+        - run:
+            name: package docker
+            command: gcloud builds submit --tag gcr.io/spkz-327309/spkz-node:$VERSION_SNAPSHOT
+
+  release:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: set git email
+          command: git config --global user.email "tech@arianee.org"
+      - run:
+          name: set git name
+          command: git config --global user.name "Arianee Deployer"
+      - run:
+          name: remote origin url git
+          command: git config --get remote.origin.url
+      - run:
+          name: setup push git commits & tags simultaneously
+          command: git config --global push.followTags true
+      - run:
+          name: version
+          command: export VERSION=`cat ./package.json | jq -r .version` && echo "export VERSION=$VERSION" >> $BASH_ENV
+      - run:
+          name: push tag && update version
+          command: node ./.circleci/update-version.js ${VERSION}
+
+  package-main:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - checkout
+      - node/install-packages
+      - jq/install
+      - gcp-connect
+      - attach_workspace:
+          at: ./
+      - run:
+          name: version
+          command: export VERSION=`cat ./package.json | jq -r .version` && echo "export VERSION=$VERSION" >> $BASH_ENV
+      - run:
+          name: package docker
+          command: gcloud builds submit --tag gcr.io/spkz-327309/spkz-node:$VERSION
+
+  deploy-develop:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - deploy
+
+  deploy-uat:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - deploy:
+          snapshot: false
+          service: "node-spkz-uat"
+          password-database: $DB_PASS_DEV
+          name-database: "node-spkz-uat"
+          instance-database: "node-spkz-dev"
+
+  deploy-prod:
+    docker:
+      - image: cimg/node:14.17.6
+    steps:
+      - deploy:
+          snapshot: false
+          service: "node-spkz-prod"
+          password-database: $DB_PASS
+          name-database: "node-spkz-prod"
+          instance-database: "node-spkz"
+
+workflows:
+  build-test-package-release-deploy:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+      - package-develop:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
+      - package-main:
+          requires:
+            - release
+          filters:
+            branches:
+              only: main
+      - deploy-develop:
+          requires:
+            - package-develop
+          filters:
+            branches:
+              only: develop
+      - approval-uat:
+          type: approval
+          requires:
+            - package-main
+          filters:
+            branches:
+              only: main
+      - deploy-uat:
+          requires:
+            - approval-uat
+          filters:
+            branches:
+              only: main
+      - approval-prod:
+          type: approval
+          requires:
+            - package-main
+          filters:
+            branches:
+              only: main
+      - deploy-prod:
+          requires:
+            - approval-prod
+          filters:
+            branches:
+              only: main
+
+
