@@ -21,7 +21,8 @@ commands:
       - run:
           name: add gcp project to ENV
           command: echo "export GOOGLE_PROJECT_ID=<< parameters.project >>" >> $BASH_ENV
-      - gcp-cli/install
+      - gcp-cli/install:
+          version: "358.0.0"
       - run:
           name: initialize gcloud CLI to connect to Google Cloud
           command: |
@@ -70,11 +71,17 @@ commands:
       instance-database:
         type: string
         default: "node-spkz-dev"
+      redis-url:
+        type: string
+        default: "redis://10.17.58.228:6379"
+      vpc:
+        type: string
+        default: "spkz-dev"
 
     steps:
       - run:
           name: show parameters
-          command: echo << parameters.project >> && echo << parameters.snapshot >> && echo << parameters.service >>
+          command: echo << parameters.project >> && echo << parameters.snapshot >> && echo << parameters.service >> && echo << parameters.redis-url >> && echo << parameters.vpc >>
       - checkout
       - jq/install
       - login-npm
@@ -88,9 +95,45 @@ commands:
               export VERSION_TAG=`cat ./package.json | jq -r .version` && echo "export VERSION_TAG=$VERSION_TAG" >> $BASH_ENV
             fi
       - run:
-          name: gcloud run deploy
-          command: gcloud run deploy << parameters.service >> --image gcr.io/spkz-327309/spkz-node:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432 --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
+          name: gcloud run deploy node
+          command: gcloud run deploy << parameters.service >> --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432,REDIS_URL=<< parameters.redis-url >> --vpc-connector=<< parameters.vpc >> --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
+      - run:
+          name: gcloud run deploy websocket
+          command: gcloud run deploy << parameters.service >>-ws --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}-ws:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated  --update-env-vars REDIS_URL=<< parameters.redis-url >> --vpc-connector=<< parameters.vpc >>
 
+  package:
+    description: "package node"
+    parameters:
+      project:
+        type: string
+        default: "spkz-327309"
+      snapshot:
+        type: boolean
+        default: true
+    steps:
+      - run:
+          name: show parameters
+          command: echo << parameters.project >> && echo << parameters.snapshot >>
+      - checkout
+      - node/install-packages
+      - jq/install
+      - gcp-connect
+      - attach_workspace:
+          at: ./
+      - run:
+          name: version tag
+          command: |
+            if [ << parameters.snapshot >> = true ]; then
+              export VERSION_TAG=`cat ./package.json | jq -r .version`-SNAPSHOT && echo "export VERSION_TAG=$VERSION_TAG" >> $BASH_ENV
+            else
+              export VERSION_TAG=`cat ./package.json | jq -r .version` && echo "export VERSION_TAG=$VERSION_TAG" >> $BASH_ENV
+            fi
+      - run:
+          name: package docker node
+          command: gcloud builds submit --tag gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}:$VERSION_TAG
+      - run:
+          name: package docker websocket
+          command: cp Dockerfile.websocket Dockerfile && gcloud builds submit --tag gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}-ws:$VERSION_TAG
 jobs:
   test:
     docker:
@@ -125,18 +168,7 @@ jobs:
     docker:
       - image: cimg/node:14.17.6
     steps:
-        - checkout
-        - node/install-packages
-        - jq/install
-        - gcp-connect
-        - attach_workspace:
-              at: ./
-        - run:
-            name: version snapshot
-            command: export VERSION_SNAPSHOT=`cat ./package.json | jq -r .version`-SNAPSHOT && echo "export VERSION_SNAPSHOT=$VERSION_SNAPSHOT" >> $BASH_ENV
-        - run:
-            name: package docker
-            command: gcloud builds submit --tag gcr.io/spkz-327309/spkz-node:$VERSION_SNAPSHOT
+      - package
 
   release:
     docker:
@@ -167,18 +199,8 @@ jobs:
     docker:
       - image: cimg/node:14.17.6
     steps:
-      - checkout
-      - node/install-packages
-      - jq/install
-      - gcp-connect
-      - attach_workspace:
-          at: ./
-      - run:
-          name: version
-          command: export VERSION=`cat ./package.json | jq -r .version` && echo "export VERSION=$VERSION" >> $BASH_ENV
-      - run:
-          name: package docker
-          command: gcloud builds submit --tag gcr.io/spkz-327309/spkz-node:$VERSION
+      - package:
+          snapshot: false
 
   deploy-develop:
     docker:
@@ -196,6 +218,8 @@ jobs:
           password-database: $DB_PASS_DEV
           name-database: "node-spkz-uat"
           instance-database: "node-spkz-dev"
+          redis-url: "redis://10.17.58.228:6379"
+          vpc: "spkz-dev"
 
   deploy-prod:
     docker:
@@ -207,6 +231,8 @@ jobs:
           password-database: $DB_PASS
           name-database: "node-spkz-prod"
           instance-database: "node-spkz"
+          redis-url: "redis://10.232.239.188:6379"
+          vpc: "spkz-prod"
 
 workflows:
   build-test-package-release-deploy:
