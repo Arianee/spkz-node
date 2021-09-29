@@ -2,4 +2,14 @@ FROM node:alpine3.14
 
 WORKDIR /home/api
 
-ENTRYPOINT ["npm", "run", "start:websocket:w"]
+COPY package.json .
+COPY package-lock.json .
+COPY .sequelizerc .
+COPY ./src ./src
+
+COPY tsconfig.json .
+
+RUN npm ci
+RUN npm run build:simple
+
+ENTRYPOINT ["npm", "run", "start:websocket"]

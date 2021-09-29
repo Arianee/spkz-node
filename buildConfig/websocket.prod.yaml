@@ -1,0 +1,4 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/spkz-327309/spkz-node-ws', '-f', './Dockerfile.websocket', '.' ]
+images: ['gcr.io/spkz-327309/spkz-node-ws']

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm run build:migrate && npm run db:migrate && nodemon",
     "start:prod": "npm run db:migrate && node dist/server.js",
+    "start:websocket": "node dist/server.notification.js",
     "start:websocket:w": "nodemon --config nodemon.notification.json",
     "build": "npm run build:migrate && tsc",
     "build:migrate": "tsc --project tsconfig.migrate.json",
