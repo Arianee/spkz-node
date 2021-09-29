@@ -1,8 +1,10 @@
+import cors from 'cors';
 import { MessageService } from './services/message.service';
 
 const express = require('express');
 
 const app = express();
+app.use(cors());
 const port = process.env.PORT;
 
 app.use(express.json());

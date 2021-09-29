@@ -1,0 +1,5 @@
+FROM node:alpine3.14
+
+WORKDIR /home/api
+
+ENTRYPOINT ["npm", "run", "start:websocket:w"]

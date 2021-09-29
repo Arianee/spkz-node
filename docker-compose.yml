@@ -22,10 +22,12 @@ services:
       - PORT=3000
       - NETWORK_ID=80001
       - CHAIN_ID=80001
+      - REDIS_URL=redis://redis-ws:6379
     ports:
       - 3000:3000
     depends_on:
       - postgres
+      - redis-ws
   postgres:
     image: postgres:13.4
     container_name: postgres
@@ -37,5 +39,20 @@ services:
       - POSTGRES_DB=spkz-node
     ports:
       - 5432:5432
+  redis-ws:
+    image: redis
+    container_name: redis-ws
+  spkz-notification:
+    build:
+      context: ./
+      dockerfile: Dockerfile.websocket
+    image: spkz-notification
+    container_name: spkz-notification
+    volumes:
+      - ./:/home/api
+    ports:
+      - 3001:3001
+    depends_on:
+      - redis-ws
 volumes:
   postgres-volume:
