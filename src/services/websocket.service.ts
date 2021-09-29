@@ -3,10 +3,11 @@ import { utils } from '@arianee/spkz-sdk/services/utils';
 import { JSONRPCErrors } from '@arianee/spkz-sdk/models/JSONRPCError';
 import { requiredDefined } from '@arianee/spkz-sdk/helpers/required/required';
 import { createHash } from 'crypto';
+import { createServer } from 'http';
 import redisService from './redis.service';
 
 export class WebsocketService {
-  private port = parseInt(process.env.WS_PORT, 10) || 3001;
+  private port = parseInt(process.env.PORT, 10) || 3001;
 
   private server;
 
@@ -17,11 +18,15 @@ export class WebsocketService {
   }
 
   public openServer = () => {
-    this.server = new Server(this.port, {
+    const httpServer = createServer();
+    this.server = new Server(httpServer, {
       cors: {
         origin: '*',
         methods: '*',
       },
+    });
+    httpServer.listen(this.port, () => {
+      console.info(`Notification server is listening on port:${this.port}`);
     });
 
     redisService.redisClient.on('message', (channel, message) => {

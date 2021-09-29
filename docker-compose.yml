@@ -45,13 +45,15 @@ services:
   spkz-notification:
     build:
       context: ./
-      dockerfile: Dockerfile.websocket
+      dockerfile: Dockerfile.websocket.local
     image: spkz-notification
     container_name: spkz-notification
     environment:
       - REDIS_URL=redis://redis-ws:6379
     volumes:
       - ./:/home/api
+    environment:
+      - REDIS_URL=redis://redis-ws:6379
     ports:
       - 3001:3001
     depends_on:

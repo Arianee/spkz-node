@@ -1,4 +1,4 @@
-import { SPKZJSONRPC } from '@arianee/spkz-sdk';
+import { SPKZJSONRPC } from '@arianee/spkz-sdk/server';
 import { NetworkParameters } from '@arianee/spkz-sdk/models/jsonrpc/networkParameters';
 import {
   SectionUser as SectionUserSDK, RoomUser as RoomUserSDK, SectionUserGet, ReadMessageParameters, WriteMessageParameters,
