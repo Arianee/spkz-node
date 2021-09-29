@@ -32,7 +32,7 @@ services:
     image: postgres:13.4
     container_name: postgres-spkz-node
     volumes:
-      - postgres-volume:/var/lib/postgresql/data
+      - postgres-volume-spkz-node:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=spkz
       - POSTGRES_PASSWORD=spkz
@@ -57,4 +57,4 @@ services:
     depends_on:
       - redis-ws
 volumes:
-  postgres-volume:
+  postgres-volume-spkz-node:
