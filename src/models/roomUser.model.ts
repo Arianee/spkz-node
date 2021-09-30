@@ -1,32 +1,24 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelizeInstance from '../services/bdd.service';
 
-export class Message extends Model {
-  id:number;
-
-  payload: any;
-
-  network:string;
-
+// a user of a section
+export class RoomUser extends Model {
   roomId: string;
-
-  sectionId: string;
 
   blockchainWallet: string;
 
   chainId: string;
+
+  network: string;
+
+  payload: string
 
   updatedAt: Date;
 
   createdAt: Date;
 }
 
-export const attributesMessage = {
-  id: {
-    primaryKey: true,
-    type: DataTypes.BIGINT,
-    unique: true,
-  },
+export const attributesRoomUser = {
   payload: {
     type: DataTypes.JSON,
   },
@@ -36,10 +28,9 @@ export const attributesMessage = {
   roomId: {
     type: DataTypes.STRING,
   },
-  sectionId: {
-    type: DataTypes.STRING,
-  },
   blockchainWallet: {
+    primaryKey: true,
+    unique: true,
     type: DataTypes.STRING,
   },
   chainId: {
@@ -53,4 +44,4 @@ export const attributesMessage = {
   },
 };
 
-Message.init(attributesMessage, { sequelize: sequelizeInstance(), modelName: 'message' });
+RoomUser.init(attributesRoomUser, { sequelize: sequelizeInstance(), modelName: 'roomUser' });

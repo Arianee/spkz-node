@@ -12,7 +12,7 @@ services:
       - DB_NAME=spkz-node
       - DB_USER=spkz
       - DB_PASSWORD=spkz
-      - DB_HOST=postgres
+      - DB_HOST=postgres-spkz-node
       - DB_PORT=5432
       - DB_SCHEMA=public
       - DB_LOGGING=false
@@ -22,20 +22,41 @@ services:
       - PORT=3000
       - NETWORK_ID=80001
       - CHAIN_ID=80001
+      - REDIS_URL=redis://redis-ws:6379
     ports:
       - 3000:3000
     depends_on:
-      - postgres
-  postgres:
+      - redis-ws
+      - postgres-spkz-node
+  postgres-spkz-node:
     image: postgres:13.4
-    container_name: postgres
+    container_name: postgres-spkz-node
     volumes:
-      - postgres-volume:/var/lib/postgresql/data
+      - postgres-volume-spkz-node:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=spkz
       - POSTGRES_PASSWORD=spkz
       - POSTGRES_DB=spkz-node
     ports:
       - 5432:5432
+  redis-ws:
+    image: redis
+    container_name: redis-ws
+  spkz-notification:
+    build:
+      context: ./
+      dockerfile: Dockerfile.websocket.local
+    image: spkz-notification
+    container_name: spkz-notification
+    environment:
+      - REDIS_URL=redis://redis-ws:6379
+    volumes:
+      - ./:/home/api
+    environment:
+      - REDIS_URL=redis://redis-ws:6379
+    ports:
+      - 3001:3001
+    depends_on:
+      - redis-ws
 volumes:
-  postgres-volume:
+  postgres-volume-spkz-node:

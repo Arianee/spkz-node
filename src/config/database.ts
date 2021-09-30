@@ -1,6 +1,6 @@
 import { Options } from 'sequelize';
 
-let host = process.env.DB_HOST || 'postgres';
+let host = process.env.DB_HOST || 'postgres-spkz-sdk';
 if (process.env.CLOUD_SQL_CONNECTION_NAME) {
   const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
   host = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
