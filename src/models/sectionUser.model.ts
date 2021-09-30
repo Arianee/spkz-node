@@ -27,6 +27,7 @@ export const attributesSectionUser = {
     primaryKey: true,
     unique: true,
     type: DataTypes.BIGINT,
+    autoIncrement: true,
   },
   payload: {
     type: DataTypes.JSON,

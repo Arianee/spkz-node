@@ -6,6 +6,7 @@ import {
 import { SectionUser } from '../models/sectionUser.model';
 import { Message } from '../models/message.model';
 import { RoomUser } from '../models/roomUser.model';
+import redisService from './redis.service';
 
 export class SpkzNodeService {
   private jsonRPC;
@@ -29,10 +30,11 @@ export class SpkzNodeService {
         },
         write: async (parameters: WriteMessageParameters) => {
           const value = {
-            id: parameters.signature,
             ...parameters,
           };
+
           const message = await Message.create(value);
+          redisService.publish('spkz-message', JSON.stringify(message));
           return Promise.resolve(message);
         },
       }).setUsersMethod({
@@ -43,7 +45,6 @@ export class SpkzNodeService {
               roomId: sectionUserGet.roomId,
               network: sectionUserGet.network,
               chainId: sectionUserGet.chainId,
-
             },
             raw: true,
           });
