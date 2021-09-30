@@ -19,6 +19,12 @@ export class RoomUser extends Model {
 }
 
 export const attributesRoomUser = {
+  id: {
+    primaryKey: true,
+    unique: true,
+    type: DataTypes.BIGINT,
+    autoIncrement: true,
+  },
   payload: {
     type: DataTypes.JSON,
   },

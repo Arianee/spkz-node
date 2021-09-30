@@ -26,6 +26,7 @@ export const attributesMessage = {
     primaryKey: true,
     type: DataTypes.BIGINT,
     unique: true,
+    autoIncrement: true,
   },
   payload: {
     type: DataTypes.JSON,
@@ -43,6 +44,9 @@ export const attributesMessage = {
     type: DataTypes.STRING,
   },
   chainId: {
+    type: DataTypes.STRING,
+  },
+  signature: {
     type: DataTypes.STRING,
   },
   updatedAt: {
