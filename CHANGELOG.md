@@ -1,5 +1,20 @@
 #  Spkz node
 #  Release notes
+## v1.1.0 ( 2021-09-30 )
+
+### **feat (3):**
+ - feat(cicd): Add web socket build and vpc
+ - feat(db): plug user profile and list to postgre dbb
+ - feat(websocket): add websocket server
+
+### **fix (3):**
+ - fix(websocket): fix ws for production environment
+ - fix(docker): Postgres volume
+ - fix(websocket): fix redis url in docker compose
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.0.0
+
 ## v1.0.0 ( 2021-09-28 )
 
 ### **fix (2):**
