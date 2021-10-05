@@ -55,6 +55,9 @@ export class SpkzNodeService {
           const [profileReturn, isCreated] = await RoomUser.findOrCreate({
             where: {
               blockchainWallet: roomUserSDK.blockchainWallet,
+              roomId: roomUserSDK.roomId,
+              network: roomUserSDK.network,
+              chainId: roomUserSDK.chainId,
             },
             defaults: {
               roomId: roomUserSDK.roomId,
