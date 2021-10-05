@@ -55,6 +55,9 @@ export class SpkzNodeService {
           const [profileReturn, isCreated] = await RoomUser.findOrCreate({
             where: {
               blockchainWallet: roomUserSDK.blockchainWallet,
+              roomId: roomUserSDK.roomId,
+              network: roomUserSDK.network,
+              chainId: roomUserSDK.chainId,
             },
             defaults: {
               roomId: roomUserSDK.roomId,
@@ -72,20 +75,27 @@ export class SpkzNodeService {
 
           return profileReturn;
         },
-        joinSection: async (sectionUserSDK: SectionUserSDK) => SectionUser.findOrCreate({
-          where: {
-            blockchainWallet: sectionUserSDK.blockchainWallet,
-          },
-          defaults: {
-            roomId: sectionUserSDK.roomId,
-            sectionId: sectionUserSDK.sectionId,
-            network: sectionUserSDK.network,
-            chainId: sectionUserSDK.chainId,
-            payload: sectionUserSDK.payload,
-            blockchainWallet: sectionUserSDK.blockchainWallet,
-          },
+        joinSection: async (sectionUserSDK: SectionUserSDK) => {
+          const [sectionUser] = await SectionUser.findOrCreate({
+            where: {
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+              roomId: sectionUserSDK.roomId,
+              sectionId: sectionUserSDK.sectionId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+            },
+            defaults: {
+              roomId: sectionUserSDK.roomId,
+              sectionId: sectionUserSDK.sectionId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+              payload: sectionUserSDK.payload,
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+            },
 
-        }),
+          });
+          return sectionUser;
+        },
       })
 
       .build();
