@@ -6,6 +6,7 @@ import {
 import { SectionUser } from '../models/sectionUser.model';
 import { Message } from '../models/message.model';
 import { RoomUser } from '../models/roomUser.model';
+import redisService from './redis.service';
 
 export class SpkzNodeService {
   private jsonRPC;
@@ -29,10 +30,11 @@ export class SpkzNodeService {
         },
         write: async (parameters: WriteMessageParameters) => {
           const value = {
-            id: parameters.signature,
             ...parameters,
           };
+
           const message = await Message.create(value);
+          redisService.publish('spkz-message', JSON.stringify(message));
           return Promise.resolve(message);
         },
       }).setUsersMethod({
@@ -43,7 +45,6 @@ export class SpkzNodeService {
               roomId: sectionUserGet.roomId,
               network: sectionUserGet.network,
               chainId: sectionUserGet.chainId,
-
             },
             raw: true,
           });
@@ -54,6 +55,9 @@ export class SpkzNodeService {
           const [profileReturn, isCreated] = await RoomUser.findOrCreate({
             where: {
               blockchainWallet: roomUserSDK.blockchainWallet,
+              roomId: roomUserSDK.roomId,
+              network: roomUserSDK.network,
+              chainId: roomUserSDK.chainId,
             },
             defaults: {
               roomId: roomUserSDK.roomId,
@@ -71,20 +75,27 @@ export class SpkzNodeService {
 
           return profileReturn;
         },
-        joinSection: async (sectionUserSDK: SectionUserSDK) => SectionUser.findOrCreate({
-          where: {
-            blockchainWallet: sectionUserSDK.blockchainWallet,
-          },
-          defaults: {
-            roomId: sectionUserSDK.roomId,
-            sectionId: sectionUserSDK.sectionId,
-            network: sectionUserSDK.network,
-            chainId: sectionUserSDK.chainId,
-            payload: sectionUserSDK.payload,
-            blockchainWallet: sectionUserSDK.blockchainWallet,
-          },
+        joinSection: async (sectionUserSDK: SectionUserSDK) => {
+          const [sectionUser] = await SectionUser.findOrCreate({
+            where: {
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+              roomId: sectionUserSDK.roomId,
+              sectionId: sectionUserSDK.sectionId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+            },
+            defaults: {
+              roomId: sectionUserSDK.roomId,
+              sectionId: sectionUserSDK.sectionId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+              payload: sectionUserSDK.payload,
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+            },
 
-        }),
+          });
+          return sectionUser;
+        },
       })
 
       .build();

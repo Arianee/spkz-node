@@ -77,6 +77,9 @@ commands:
       vpc:
         type: string
         default: "spkz-dev"
+      spkzenv:
+        type: string
+        default: "dev"
 
     steps:
       - run:
@@ -96,10 +99,10 @@ commands:
             fi
       - run:
           name: gcloud run deploy node
-          command: gcloud run deploy << parameters.service >> --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432,REDIS_URL=<< parameters.redis-url >> --vpc-connector=<< parameters.vpc >> --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
+          command: gcloud run deploy << parameters.service >> --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432,REDIS_URL=<< parameters.redis-url >>,spkzEnv=<< parameters.spkzenv >> --vpc-connector=<< parameters.vpc >> --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
       - run:
           name: gcloud run deploy websocket
-          command: gcloud run deploy << parameters.service >>-ws --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}-ws:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated  --update-env-vars REDIS_URL=<< parameters.redis-url >> --vpc-connector=<< parameters.vpc >>
+          command: gcloud run deploy << parameters.service >>-ws --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}-ws:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated  --update-env-vars REDIS_URL=<< parameters.redis-url >>,spkzEnv=<< parameters.spkzenv >> --vpc-connector=<< parameters.vpc >>
 
   package:
     description: "package node"
@@ -220,6 +223,7 @@ jobs:
           instance-database: "node-spkz-dev"
           redis-url: "redis://10.17.58.228:6379"
           vpc: "spkz-dev"
+          spkzenv: "dev"
 
   deploy-prod:
     docker:
@@ -233,6 +237,7 @@ jobs:
           instance-database: "node-spkz"
           redis-url: "redis://10.232.239.188:6379"
           vpc: "spkz-prod"
+          spkzenv: "prod"
 
 workflows:
   build-test-package-release-deploy:

@@ -52,14 +52,14 @@ export class WebsocketService {
         const { isAuthorized, blockchainWallets } = await utils.rightService.verifyPayloadSignatures(params);
 
         if (isAuthorized === false) {
-          return callback(new Error(JSONRPCErrors.wrongSignatureForPayload));
+          return callback(JSONRPCErrors.wrongSignatureForPayload);
         }
 
         const firstBlockchainWallet = blockchainWallets[0];
         const hasRightToRead = await utils.rightService.canReadSection({ roomId, sectionId, address: firstBlockchainWallet });
 
         if (hasRightToRead.isAuthorized === false) {
-          return callback(new Error(JSONRPCErrors.notHasReadRight));
+          return callback(JSONRPCErrors.notHasReadRight);
         }
 
         return socket.join(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`));
