@@ -35,8 +35,6 @@ export const attributesRoomUser = {
     type: DataTypes.STRING,
   },
   blockchainWallet: {
-    primaryKey: true,
-    unique: true,
     type: DataTypes.STRING,
   },
   chainId: {

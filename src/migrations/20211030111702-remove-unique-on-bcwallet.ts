@@ -4,11 +4,11 @@ import * as config from '../config/database';
 module.exports = {
   async up(queryInterface) {
     await queryInterface.dropTable(
-      { schema: config.define.schema, tableName: 'sectionUsers' },
+      { schema: config.define.schema, tableName: 'roomUsers' },
     );
 
     await queryInterface.createTable(
-      { schema: config.define.schema, tableName: 'sectionUsers' },
+      { schema: config.define.schema, tableName: 'roomUsers' },
       {
         id: {
           primaryKey: true,
@@ -25,11 +25,7 @@ module.exports = {
         roomId: {
           type: DataTypes.STRING,
         },
-        sectionId: {
-          type: DataTypes.STRING,
-        },
         blockchainWallet: {
-
           type: DataTypes.STRING,
         },
         chainId: {
@@ -43,15 +39,23 @@ module.exports = {
         },
       },
       {
-        tableName: 'sectionUsers',
+        tableName: 'roomUsers',
         timestamps: true,
+      },
+    );
+
+    await queryInterface.addIndex(
+      { schema: config.define.schema, tableName: 'roomUsers' },
+      ['blockchainWallet', 'roomId', 'network', 'chainId'], {
+        name: 'sectionUsers_blockchainWallet_roomId_network_chainId',
+        unique: true,
       },
     );
   },
   down(queryInterface) {
     // logic for reverting the changes
     return Promise.all([
-      queryInterface.dropTable('sectionUsers'),
+      queryInterface.dropTable('roomUsers'),
     ]);
   },
 };
