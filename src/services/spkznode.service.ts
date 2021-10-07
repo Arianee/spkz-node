@@ -46,6 +46,7 @@ export class SpkzNodeService {
               network: sectionUserGet.network,
               chainId: sectionUserGet.chainId,
             },
+            order: [['updatedAt', 'desc']],
             raw: true,
           });
 
