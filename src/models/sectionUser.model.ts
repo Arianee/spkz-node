@@ -20,6 +20,10 @@ export class SectionUser extends Model {
   updatedAt: Date;
 
   createdAt: Date;
+
+  userProfile?: {
+    payload: {}
+  }
 }
 
 export const attributesSectionUser = {

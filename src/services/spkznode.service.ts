@@ -47,10 +47,22 @@ export class SpkzNodeService {
               chainId: sectionUserGet.chainId,
             },
             order: [['updatedAt', 'desc']],
-            raw: true,
+            raw: false,
           });
-
-          return sectionUsers;
+          const users: SectionUser[] = await Promise.all(sectionUsers.map(async (su: SectionUser) => {
+            const roomUser: RoomUser = await RoomUser.findOne({
+              where: {
+                blockchainWallet: su.blockchainWallet,
+                roomId: sectionUserGet.roomId,
+                network: sectionUserGet.network,
+                chainId: sectionUserGet.chainId,
+              },
+            });
+            const sectionUser: SectionUser = su.toJSON() as SectionUser;
+            sectionUser.userProfile = { payload: roomUser.payload };
+            return sectionUser;
+          }));
+          return users;
         },
         createOrUpdateProfile: async (roomUserSDK: RoomUserSDK) => {
           const [profileReturn, isCreated] = await RoomUser.findOrCreate({
@@ -95,7 +107,17 @@ export class SpkzNodeService {
             },
 
           });
-          return sectionUser;
+          const roomUser: RoomUser = await RoomUser.findOne({
+            where: {
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+              roomId: sectionUserSDK.roomId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+            },
+          });
+          const user: SectionUser = sectionUser.toJSON() as SectionUser;
+          user.userProfile = { payload: roomUser.payload };
+          return user;
         },
       })
 
