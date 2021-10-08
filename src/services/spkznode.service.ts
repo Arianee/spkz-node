@@ -7,6 +7,7 @@ import { SectionUser } from '../models/sectionUser.model';
 import { Message } from '../models/message.model';
 import { RoomUser } from '../models/roomUser.model';
 import redisService from './redis.service';
+import sequelizeInstance from './bdd.service';
 
 export class SpkzNodeService {
   private jsonRPC;
@@ -39,30 +40,28 @@ export class SpkzNodeService {
         },
       }).setUsersMethod({
         getUsers: async (sectionUserGet: SectionUserGet) => {
-          const sectionUsers = await SectionUser.findAll({
-            where: {
-              sectionId: sectionUserGet.sectionId,
-              roomId: sectionUserGet.roomId,
-              network: sectionUserGet.network,
-              chainId: sectionUserGet.chainId,
-            },
-            order: [['updatedAt', 'desc']],
-            raw: false,
-          });
-          const users: SectionUser[] = await Promise.all(sectionUsers.map(async (su: SectionUser) => {
-            const roomUser: RoomUser = await RoomUser.findOne({
-              where: {
-                blockchainWallet: su.blockchainWallet,
-                roomId: sectionUserGet.roomId,
-                network: sectionUserGet.network,
-                chainId: sectionUserGet.chainId,
-              },
-            });
-            const sectionUser: SectionUser = su.toJSON() as SectionUser;
-            sectionUser.userProfile = { payload: roomUser.payload };
-            return sectionUser;
-          }));
-          return users;
+          try {
+            const [sectionUsers] = await sequelizeInstance().query(`
+                SELECT "sectionUsers".*, "roomUsers".payload as userProfile  FROM "sectionUsers"
+                LEFT JOIN
+                "roomUsers"
+                on
+                "roomUsers"."blockchainWallet" = "sectionUsers"."blockchainWallet" AND
+                "roomUsers"."roomId" = "sectionUsers"."roomId" AND
+                "roomUsers"."network" = "sectionUsers"."network" AND
+                "roomUsers"."chainId" = "sectionUsers"."chainId"
+                WHERE 
+                "sectionUsers"."roomId" = '${sectionUserGet.roomId}' AND
+                "sectionUsers"."sectionId"= '${sectionUserGet.sectionId}' AND
+                "sectionUsers"."network"= '${sectionUserGet.network}' AND
+                "sectionUsers"."chainId"= '${sectionUserGet.chainId}'
+            `) as any;
+
+            return sectionUsers;
+          } catch (e) {
+            console.error('e', e);
+            return { error: e };
+          }
         },
         createOrUpdateProfile: async (roomUserSDK: RoomUserSDK) => {
           const [profileReturn, isCreated] = await RoomUser.findOrCreate({
