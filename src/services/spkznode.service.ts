@@ -55,6 +55,7 @@ export class SpkzNodeService {
                 "sectionUsers"."sectionId"= '${sectionUserGet.sectionId}' AND
                 "sectionUsers"."network"= '${sectionUserGet.network}' AND
                 "sectionUsers"."chainId"= '${sectionUserGet.chainId}'
+                ORDER BY "roomUsers"."updatedAt" DESC
             `) as any;
 
             return sectionUsers;
