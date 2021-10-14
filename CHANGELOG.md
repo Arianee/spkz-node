@@ -1,5 +1,29 @@
 #  Spkz node
 #  Release notes
+## v1.3.0 ( 2021-10-14 )
+
+### **chore (2):**
+ - chore(sdk): update sdk
+ - chore(sdk): bump
+
+### **fix (2):**
+ - fix(members): fix order
+ - fix(members): order by profile updatedate
+
+### **feat (9):**
+ - feat(sdk): bump
+ - feat(sdk): bump sdk
+ - feat(sdk): bump sdk
+ - feat(profile): get userProfile in join
+ - feat(rpc): update spkz-sdk
+ - feat(rpc): Fetch profile payload
+ - feat(sdk): update package version
+ - feat(members): order by updatedAt desc
+ - feat(sdk): bump
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.2.0
+
 ## v1.2.0 ( 2021-10-6 )
 
 ### **fix (6):**
