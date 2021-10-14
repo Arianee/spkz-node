@@ -42,20 +42,20 @@ export class SpkzNodeService {
         getUsers: async (sectionUserGet: SectionUserGet) => {
           try {
             const [sectionUsers] = await sequelizeInstance().query(`
-                SELECT "sectionUsers".*, "roomUsers".payload as userProfile, "roomUsers".updateAt FROM "sectionUsers"
-                LEFT JOIN
-                "roomUsers"
-                on
-                "roomUsers"."blockchainWallet" = "sectionUsers"."blockchainWallet" AND
-                "roomUsers"."roomId" = "sectionUsers"."roomId" AND
-                "roomUsers"."network" = "sectionUsers"."network" AND
-                "roomUsers"."chainId" = "sectionUsers"."chainId"
-                WHERE 
-                "sectionUsers"."roomId" = '${sectionUserGet.roomId}' AND
-                "sectionUsers"."sectionId"= '${sectionUserGet.sectionId}' AND
-                "sectionUsers"."network"= '${sectionUserGet.network}' AND
-                "sectionUsers"."chainId"= '${sectionUserGet.chainId}'
-                ORDER BY "roomUsers"."updatedAt" DESC
+              SELECT "roomUsers".payload AS userProfile, "roomUsers".* FROM "sectionUsers"
+              LEFT JOIN
+              "roomUsers"
+              ON
+              "roomUsers"."blockchainWallet" = "sectionUsers"."blockchainWallet" AND
+              "roomUsers"."roomId" = "sectionUsers"."roomId" AND
+              "roomUsers"."network" = "sectionUsers"."network" AND
+              "roomUsers"."chainId" = "sectionUsers"."chainId"
+              WHERE 
+              "sectionUsers"."roomId" = '${sectionUserGet.roomId}' AND
+              "sectionUsers"."sectionId"= '${sectionUserGet.sectionId}' AND
+              "sectionUsers"."network"= '${sectionUserGet.network}' AND
+              "sectionUsers"."chainId"= '${sectionUserGet.chainId}'
+              ORDER BY "roomUsers"."updatedAt" DESC
             `) as any;
 
             return sectionUsers;
