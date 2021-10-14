@@ -7,6 +7,7 @@ import { SectionUser } from '../models/sectionUser.model';
 import { Message } from '../models/message.model';
 import { RoomUser } from '../models/roomUser.model';
 import redisService from './redis.service';
+import sequelizeInstance from './bdd.service';
 
 export class SpkzNodeService {
   private jsonRPC;
@@ -39,17 +40,29 @@ export class SpkzNodeService {
         },
       }).setUsersMethod({
         getUsers: async (sectionUserGet: SectionUserGet) => {
-          const sectionUsers = await SectionUser.findAll({
-            where: {
-              sectionId: sectionUserGet.sectionId,
-              roomId: sectionUserGet.roomId,
-              network: sectionUserGet.network,
-              chainId: sectionUserGet.chainId,
-            },
-            raw: true,
-          });
+          try {
+            const [sectionUsers] = await sequelizeInstance().query(`
+              SELECT "roomUsers".payload AS userProfile, "roomUsers".* FROM "sectionUsers"
+              LEFT JOIN
+              "roomUsers"
+              ON
+              "roomUsers"."blockchainWallet" = "sectionUsers"."blockchainWallet" AND
+              "roomUsers"."roomId" = "sectionUsers"."roomId" AND
+              "roomUsers"."network" = "sectionUsers"."network" AND
+              "roomUsers"."chainId" = "sectionUsers"."chainId"
+              WHERE 
+              "sectionUsers"."roomId" = '${sectionUserGet.roomId}' AND
+              "sectionUsers"."sectionId"= '${sectionUserGet.sectionId}' AND
+              "sectionUsers"."network"= '${sectionUserGet.network}' AND
+              "sectionUsers"."chainId"= '${sectionUserGet.chainId}'
+              ORDER BY "roomUsers"."updatedAt" DESC
+            `) as any;
 
-          return sectionUsers;
+            return sectionUsers;
+          } catch (e) {
+            console.error('e', e);
+            return { error: e };
+          }
         },
         createOrUpdateProfile: async (roomUserSDK: RoomUserSDK) => {
           const [profileReturn, isCreated] = await RoomUser.findOrCreate({
@@ -94,7 +107,17 @@ export class SpkzNodeService {
             },
 
           });
-          return sectionUser;
+          const roomUser: RoomUser = await RoomUser.findOne({
+            where: {
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+              roomId: sectionUserSDK.roomId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+            },
+          });
+          const user: SectionUser = sectionUser.toJSON() as SectionUser;
+          user.userProfile = { payload: roomUser.payload };
+          return user;
         },
       })
 

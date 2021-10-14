@@ -11,7 +11,7 @@ export class RoomUser extends Model {
 
   network: string;
 
-  payload: string
+  payload: {}
 
   updatedAt: Date;
 
