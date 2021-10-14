@@ -1,5 +1,13 @@
 #  Spkz node
 #  Release notes
+## v1.4.0 ( 2021-10-14 )
+
+### **feat (1):**
+ - feat(sdk): update sdk
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.3.0
+
 ## v1.3.0 ( 2021-10-14 )
 
 ### **chore (2):**
