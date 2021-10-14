@@ -42,7 +42,7 @@ export class SpkzNodeService {
         getUsers: async (sectionUserGet: SectionUserGet) => {
           try {
             const [sectionUsers] = await sequelizeInstance().query(`
-                SELECT "sectionUsers".*, "roomUsers".payload as userProfile  FROM "sectionUsers"
+                SELECT "sectionUsers".*, "roomUsers".payload as userProfile, "roomUsers".updateAt FROM "sectionUsers"
                 LEFT JOIN
                 "roomUsers"
                 on
