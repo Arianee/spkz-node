@@ -1,6 +1,6 @@
 {
   "name": "spkz-node",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "node for spkz by arianee",
   "main": "dist/server.js",
   "scripts": {
