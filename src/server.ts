@@ -1,7 +1,9 @@
 import cors from 'cors';
 import * as Sentry from '@sentry/node';
 
+import morgan from 'morgan';
 import { SpkzNodeService } from './services/spkznode.service';
+import { morganLogger } from './helpers/morgaLogger';
 
 const express = require('express');
 const packageJSON = require('../package.json');
@@ -14,6 +16,8 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(morgan(morganLogger, { immediate: true }));
 
 app.get(`${process.env.CONTEXT_PATH}/ping`, (req: any, res: any) => {
   res.send('pong');
