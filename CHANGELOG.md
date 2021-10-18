@@ -1,5 +1,24 @@
 #  Spkz node
 #  Release notes
+## v1.7.0 ( 2021-10-18 )
+
+### **fix (3):**
+ - fix(sentry): add sentry if deploy on prod
+ - fix(sentry): change sentry command according to doc
+ - fix(sentry): fix sentry push in ci
+
+### **chore (1):**
+ - chore(sdk): update sdk
+
+### **feat (4):**
+ - feat(sdk): bump sdk version
+ - feat(log): add morganlogger
+ - feat(sentry): add sentry
+ - feat(sdk): update sdk
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.6.0
+
 ## v1.6.0 ( 2021-10-18 )
 
 ### **feat (3):**
