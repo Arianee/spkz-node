@@ -1,5 +1,10 @@
 #  Spkz node
 #  Release notes
+## v1.7.1 ( 2021-10-18 )
+
+### **fix (1):**
+ - fix(sentry): set env as production for sentry
+
 ## v1.7.0 ( 2021-10-18 )
 
 ### **fix (3):**
