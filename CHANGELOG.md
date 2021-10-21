@@ -1,5 +1,13 @@
 #  Spkz node
 #  Release notes
+## v1.8.0 ( 2021-10-21 )
+
+### **chore (1):**
+ - chore(sdk): Bump SDK 1.4
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.7.0
+
 ## v1.7.1 ( 2021-10-18 )
 
 ### **fix (1):**
