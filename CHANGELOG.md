@@ -1,5 +1,16 @@
 #  Spkz node
 #  Release notes
+## v1.10.0 ( 2021-11-2 )
+
+### **feat (3):**
+ - feat(sdk): update sdk
+ - feat(sdk): update sdk
+ - feat: update spk-sdk
+
+### **release (2):**
+ - release(changelog): Update changelog.md [CI SKIP]
+ - release(version): Increase next develop version of v1.9.0
+
 ## v1.9.0 ( 2021-10-26 )
 
 ### **feat (1):**
