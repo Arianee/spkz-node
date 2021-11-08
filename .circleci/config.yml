@@ -99,10 +99,14 @@ commands:
             fi
       - run:
           name: gcloud run deploy node
-          command: gcloud run deploy << parameters.service >> --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432,REDIS_URL=<< parameters.redis-url >>,spkzEnv=<< parameters.spkzenv >> --vpc-connector=<< parameters.vpc >> --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
+          command: |
+            gcloud run deploy << parameters.service >> --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated --update-env-vars DEBUG=true,NODE_ENV=development,CONTEXT_PATH=,NETWORK_ID=80001,CHAIN_ID=80001,DB_LOGGING=false,DB_SCHEMA=public,DB_NAME=<< parameters.name-database >>,DB_USER=postgres,DB_PASS=<< parameters.password-database >>,DB_HOST=/cloudsql/<< parameters.project >>:europe-west1:<< parameters.instance-database >>,DB_PORT=5432,REDIS_URL=<< parameters.redis-url >>,spkzEnv=<< parameters.spkzenv >> --vpc-connector=<< parameters.vpc >> --add-cloudsql-instances=<< parameters.project >>:europe-west1:<< parameters.instance-database >>
+            gcloud run services update-traffic << parameters.service >> --to-latest --region europe-west1
       - run:
           name: gcloud run deploy websocket
-          command: gcloud run deploy << parameters.service >>-ws --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}-ws:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated  --update-env-vars REDIS_URL=<< parameters.redis-url >>,spkzEnv=<< parameters.spkzenv >> --vpc-connector=<< parameters.vpc >>
+          command: |
+            gcloud run deploy << parameters.service >>-ws --image gcr.io/<< parameters.project >>/${CIRCLE_PROJECT_REPONAME}-ws:$VERSION_TAG --platform managed --region europe-west1 --allow-unauthenticated  --update-env-vars REDIS_URL=<< parameters.redis-url >>,spkzEnv=<< parameters.spkzenv >> --vpc-connector=<< parameters.vpc >>
+            gcloud run services update-traffic << parameters.service >> --to-latest --region europe-west1
   package:
     description: "package node"
     parameters:
