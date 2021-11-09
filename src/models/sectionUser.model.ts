@@ -21,6 +21,8 @@ export class SectionUser extends Model {
 
   createdAt: Date;
 
+  lastViewed: Date;
+
   userProfile?: {
     payload: {}
   }
@@ -56,6 +58,9 @@ export const attributesSectionUser = {
     type: DataTypes.DATE,
   },
   createdAt: {
+    type: DataTypes.DATE,
+  },
+  lastViewed: {
     type: DataTypes.DATE,
   },
 };
