@@ -1,5 +1,15 @@
 #  Spkz node
 #  Release notes
+## v1.11.0 ( 2021-11-10 )
+
+### **feat (3):**
+ - feat(notification): last viewed
+ - feat(ci): auto redirect traffic to latest cloud run revision
+ - feat(sdk): update
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.10.0
+
 ## v1.10.0 ( 2021-11-2 )
 
 ### **feat (3):**
