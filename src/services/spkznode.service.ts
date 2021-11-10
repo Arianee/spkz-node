@@ -104,7 +104,6 @@ export class SpkzNodeService {
               network: sectionUserSDK.network,
               chainId: sectionUserSDK.chainId,
               payload: sectionUserSDK.payload,
-              lastViewed: Sequelize.fn('NOW'),
               blockchainWallet: sectionUserSDK.blockchainWallet,
             },
 
