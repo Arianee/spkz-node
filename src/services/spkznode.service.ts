@@ -200,7 +200,7 @@ export class SpkzNodeService {
           user.userProfile = { payload: roomUser.payload };
           return user;
         },
-        updateLatViewed: async (sectionUserSDK: SectionUserSDK) => {
+        updateLastViewed: async (sectionUserSDK: SectionUserSDK) => {
           const [profileReturn, isCreated] = await SectionUser.findOrCreate({
             where: {
               blockchainWallet: sectionUserSDK.blockchainWallet,
