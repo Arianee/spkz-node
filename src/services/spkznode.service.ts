@@ -1,7 +1,12 @@
 import { SPKZJSONRPC } from '@arianee/spkz-sdk/server';
 import { NetworkParameters } from '@arianee/spkz-sdk/models/jsonrpc/networkParameters';
 import {
-  SectionUser as SectionUserSDK, RoomUser as RoomUserSDK, SectionUserGet, ReadMessageParameters, WriteMessageParameters,
+  SectionUser as SectionUserSDK,
+  RoomUser as RoomUserSDK,
+  SectionUserGet,
+  ReadMessageParameters,
+  WriteMessageParameters,
+  ReadMessageReturn,
 } from '@arianee/spkz-sdk/models/jsonrpc/writeMessageParameters';
 import { Sequelize } from 'sequelize';
 import { SectionUser } from '../models/sectionUser.model';
@@ -16,19 +21,59 @@ export class SpkzNodeService {
   constructor() {
     this.jsonRPC = new SPKZJSONRPC({ chainId: process.env.CHAIN_ID || '1', network: process.env.NETWORK_ID || '1' } as NetworkParameters)
       .setMessagesMethod({
-        read: async (parameters: ReadMessageParameters) => {
-          const message = await Message.findAll({
+        read: async (parameters: ReadMessageParameters):Promise<ReadMessageReturn> => {
+          const hardLimit = parameters.limit < 1000 ? parameters.limit : 1000;
+          const limitPlusOne = hardLimit + 1;
+
+          const query = {
             where: {
               roomId: parameters.roomId,
               sectionId: parameters.sectionId,
               network: parameters.network,
               chainId: parameters.chainId,
             } as any,
-            limit: 100,
-            order: [['createdAt', 'desc']],
+            limit: limitPlusOne,
             raw: true,
-          });
-          return Promise.resolve(message);
+            order: null,
+          };
+
+          // typing problem. If order is in object, ts is not happy!
+          query.order = [['createdAt', 'desc']];
+          if (parameters.fromTimestamp) {
+            query.where.fromTimestamp = {
+              $gte: parameters.fromTimestamp,
+            };
+            query.order = [['createdAt', 'asc']];
+          } else if (parameters.toTimestamp) {
+            query.where.toTimestamp = {
+              $lt: parameters.toTimestamp,
+            };
+            query.order = [['createdAt', 'desc']];
+          }
+          const queryResult = await Message.findAll(query);
+          if (queryResult.length === 0) {
+            const messageResult:ReadMessageReturn = {
+              messageCount: 0,
+              isMoreMessages: false,
+              messages: [],
+              nextTimestamp: null,
+            };
+
+            return Promise.resolve(messageResult);
+          }
+          const isMoreMessages = !(queryResult.length < limitPlusOne);
+
+          const nextTimestamp = (queryResult[queryResult.length - 1].createdAt) as any;
+          const messagesToReturn = isMoreMessages ? queryResult.slice(0, queryResult.length - 1) : queryResult;
+
+          const messageResult:ReadMessageReturn = {
+            messageCount: messagesToReturn.length,
+            isMoreMessages,
+            messages: messagesToReturn,
+            nextTimestamp,
+          };
+
+          return Promise.resolve(messageResult);
         },
         write: async (parameters: WriteMessageParameters) => {
           const value = {
@@ -62,7 +107,7 @@ export class SpkzNodeService {
             return sectionUsers;
           } catch (e) {
             console.error('e', e);
-            return { error: e };
+            throw new Error(e);
           }
         },
         createOrUpdateProfile: async (roomUserSDK: RoomUserSDK) => {
@@ -151,8 +196,8 @@ export class SpkzNodeService {
   }
 
   /**
-     * Create a RPC server middleware
-     */
+   * Create a RPC server middleware
+   */
   public getJSONRPC() {
     return this.jsonRPC;
   }
