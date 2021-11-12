@@ -3,6 +3,7 @@ import { NetworkParameters } from '@arianee/spkz-sdk/models/jsonrpc/networkParam
 import {
   SectionUser as SectionUserSDK, RoomUser as RoomUserSDK, SectionUserGet, ReadMessageParameters, WriteMessageParameters,
 } from '@arianee/spkz-sdk/models/jsonrpc/writeMessageParameters';
+import { Sequelize } from 'sequelize';
 import { SectionUser } from '../models/sectionUser.model';
 import { Message } from '../models/message.model';
 import { RoomUser } from '../models/roomUser.model';
@@ -118,6 +119,31 @@ export class SpkzNodeService {
           const user: SectionUser = sectionUser.toJSON() as SectionUser;
           user.userProfile = { payload: roomUser.payload };
           return user;
+        },
+        updateLatViewed: async (sectionUserSDK: SectionUserSDK) => {
+          const [profileReturn, isCreated] = await SectionUser.findOrCreate({
+            where: {
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+              roomId: sectionUserSDK.roomId,
+              sectionId: sectionUserSDK.sectionId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+            },
+            defaults: {
+              blockchainWallet: sectionUserSDK.blockchainWallet,
+              roomId: sectionUserSDK.roomId,
+              sectionId: sectionUserSDK.sectionId,
+              network: sectionUserSDK.network,
+              chainId: sectionUserSDK.chainId,
+              lastViewed: Sequelize.fn('NOW'),
+            },
+          });
+
+          if (!isCreated) {
+            await profileReturn.update({ lastViewed: Sequelize.fn('NOW') });
+          }
+
+          return profileReturn;
         },
       })
 
