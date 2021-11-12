@@ -107,7 +107,9 @@ export class SpkzNodeService {
           GROUP BY lastViewedTable.sectionId
    `;
 
-          return sequelizeInstance().query(query) as any;
+          const [res] = await sequelizeInstance().query(query) as any;
+
+          return res;
         },
         write: async (parameters: WriteMessageParameters) => {
           const value = {
