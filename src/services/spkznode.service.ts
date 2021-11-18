@@ -81,7 +81,7 @@ export class SpkzNodeService {
         },
         newMessage: async (parameters):Promise<NewMessageCount[]> => {
           const query = `
-          SELECT count("messages"."id") as newMessagesCount, sectionId, MIN(lastViewed) as lastViewed FROM 
+          SELECT count("messages"."id") as "newMessagesCount", sectionId as "sectionId", MIN(lastViewed) as "lastViewed" FROM 
           (SELECT 
           "sectionUsers"."sectionId" as sectionId,
              "sectionUsers"."roomId" as roomId,
