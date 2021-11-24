@@ -1,5 +1,25 @@
 #  Spkz node
 #  Release notes
+## v1.12.0 ( 2021-11-24 )
+
+### **feat (7):**
+ - feat(bump): sdk
+ - feat(sdk): bump
+ - feat(sdk): upgrade
+ - feat(sdk): update
+ - feat(getmessages): get new message count
+ - feat(getmessages): get messages with count and timestamp
+ - feat(notification): update last viewed in bdd
+
+### **fix (2):**
+ - fix(getmessages): fix casse in message count request
+ - fix(getmessages): fix typo
+
+### **release (3):**
+ - release(version): Increase next develop version of v1.11.0
+ - release(changelog): Update changelog.md [CI SKIP]
+ - release(changelog): Update changelog.md [CI SKIP]
+
 ## v1.11.0 ( 2021-11-10 )
 
 ### **feat (3):**
