@@ -202,31 +202,17 @@ export class SpkzNodeService {
           user.userProfile = { payload: roomUser.payload };
           return user;
         },
-        updateLastViewed: async (sectionUserSDK: SectionUserSDK) => {
-          const [profileReturn, isCreated] = await SectionUser.findOrCreate({
-            where: {
-              blockchainWallet: sectionUserSDK.blockchainWallet,
-              roomId: sectionUserSDK.roomId,
-              sectionId: sectionUserSDK.sectionId,
-              network: sectionUserSDK.network,
-              chainId: sectionUserSDK.chainId,
-            },
-            defaults: {
-              blockchainWallet: sectionUserSDK.blockchainWallet,
-              roomId: sectionUserSDK.roomId,
-              sectionId: sectionUserSDK.sectionId,
-              network: sectionUserSDK.network,
-              chainId: sectionUserSDK.chainId,
-              lastViewed: Sequelize.fn('NOW'),
-            },
-          });
-
-          if (!isCreated) {
-            await profileReturn.update({ lastViewed: Sequelize.fn('NOW') });
-          }
-
-          return profileReturn;
-        },
+        updateLastViewed: async (sectionUserSDK: SectionUserSDK) => SectionUser.update({
+          lastViewed: Sequelize.fn('NOW'),
+        }, {
+          where: {
+            blockchainWallet: sectionUserSDK.blockchainWallet,
+            roomId: sectionUserSDK.roomId,
+            sectionId: sectionUserSDK.sectionId,
+            network: sectionUserSDK.network,
+            chainId: sectionUserSDK.chainId,
+          },
+        }),
       })
 
       .build();
