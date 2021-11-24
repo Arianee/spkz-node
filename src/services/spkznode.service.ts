@@ -81,7 +81,9 @@ export class SpkzNodeService {
         },
         newMessage: async (parameters):Promise<NewMessageCount[]> => {
           const query = `
-          SELECT count("messages"."id") as "newMessagesCount", sectionId as "sectionId", MIN(lastViewed) as "lastViewed" FROM 
+          SELECT count("messages"."id") as "newMessagesCount", 
+          sectionId as "sectionId", 
+          MIN(lastViewed) as "lastViewed" FROM 
           (SELECT 
           "sectionUsers"."sectionId" as sectionId,
              "sectionUsers"."roomId" as roomId,
@@ -103,6 +105,7 @@ export class SpkzNodeService {
           AND "messages"."network" =  lastViewedTable.network
           AND "messages"."chainId" =  lastViewedTable.chainId
           AND "messages"."createdAt" > lastViewedTable.lastViewed
+          AND "messages"."blockchainWallet" != '${parameters.blockchainWallet}'
           )
           GROUP BY lastViewedTable.sectionId
    `;
@@ -202,31 +205,17 @@ export class SpkzNodeService {
           user.userProfile = { payload: roomUser.payload };
           return user;
         },
-        updateLastViewed: async (sectionUserSDK: SectionUserSDK) => {
-          const [profileReturn, isCreated] = await SectionUser.findOrCreate({
-            where: {
-              blockchainWallet: sectionUserSDK.blockchainWallet,
-              roomId: sectionUserSDK.roomId,
-              sectionId: sectionUserSDK.sectionId,
-              network: sectionUserSDK.network,
-              chainId: sectionUserSDK.chainId,
-            },
-            defaults: {
-              blockchainWallet: sectionUserSDK.blockchainWallet,
-              roomId: sectionUserSDK.roomId,
-              sectionId: sectionUserSDK.sectionId,
-              network: sectionUserSDK.network,
-              chainId: sectionUserSDK.chainId,
-              lastViewed: Sequelize.fn('NOW'),
-            },
-          });
-
-          if (!isCreated) {
-            await profileReturn.update({ lastViewed: Sequelize.fn('NOW') });
-          }
-
-          return profileReturn;
-        },
+        updateLastViewed: async (sectionUserSDK: SectionUserSDK) => SectionUser.update({
+          lastViewed: Sequelize.fn('NOW'),
+        }, {
+          where: {
+            blockchainWallet: sectionUserSDK.blockchainWallet,
+            roomId: sectionUserSDK.roomId,
+            sectionId: sectionUserSDK.sectionId,
+            network: sectionUserSDK.network,
+            chainId: sectionUserSDK.chainId,
+          },
+        }),
       })
 
       .build();
