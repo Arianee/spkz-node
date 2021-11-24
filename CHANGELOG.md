@@ -1,5 +1,16 @@
 #  Spkz node
 #  Release notes
+## v1.13.0 ( 2021-11-24 )
+
+### **fix (1):**
+ - fix(lastviewed): update lastviewed only if it exists
+
+### **feat (1):**
+ - feat(notification): unread mesaages does not count user message
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.12.0
+
 ## v1.12.0 ( 2021-11-24 )
 
 ### **feat (7):**
