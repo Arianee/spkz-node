@@ -81,7 +81,9 @@ export class SpkzNodeService {
         },
         newMessage: async (parameters):Promise<NewMessageCount[]> => {
           const query = `
-          SELECT count("messages"."id") as "newMessagesCount", sectionId as "sectionId", MIN(lastViewed) as "lastViewed" FROM 
+          SELECT count("messages"."id") as "newMessagesCount", 
+          sectionId as "sectionId", 
+          MIN(lastViewed) as "lastViewed" FROM 
           (SELECT 
           "sectionUsers"."sectionId" as sectionId,
              "sectionUsers"."roomId" as roomId,
@@ -103,6 +105,7 @@ export class SpkzNodeService {
           AND "messages"."network" =  lastViewedTable.network
           AND "messages"."chainId" =  lastViewedTable.chainId
           AND "messages"."createdAt" > lastViewedTable.lastViewed
+          AND "messages"."blockchainWallet" != '${parameters.blockchainWallet}'
           )
           GROUP BY lastViewedTable.sectionId
    `;
