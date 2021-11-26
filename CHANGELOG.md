@@ -1,5 +1,14 @@
 #  Spkz node
 #  Release notes
+## v1.14.0 ( 2021-11-26 )
+
+### **feat (2):**
+ - feat(sdk): update sdk to have poap strategy
+ - feat(sdk): update sdk
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.13.0
+
 ## v1.13.0 ( 2021-11-24 )
 
 ### **fix (1):**
