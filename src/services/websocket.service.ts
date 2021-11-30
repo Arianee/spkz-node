@@ -1,6 +1,5 @@
 import { Server } from 'socket.io';
 import { utils } from '@arianee/spkz-sdk/services/utils';
-import { JSONRPCErrors } from '@arianee/spkz-sdk/models/JSONRPCError';
 import { requiredDefined } from '@arianee/spkz-sdk/helpers/required/required';
 import { createHash } from 'crypto';
 import { createServer } from 'http';
@@ -47,7 +46,7 @@ export class WebsocketService {
     redisService.subscribe('spkz-message');
 
     this.server.on('connection', (socket) => {
-      socket.on('joinRoom', async (params, callback) => {
+      socket.on('joinRoom', async (params) => {
         try {
           const {
             authorizations,
@@ -63,7 +62,7 @@ export class WebsocketService {
           } = await utils.rightService.verifyPayloadSignatures(params);
 
           if (isAuthorized === false) {
-            return callback(JSONRPCErrors.wrongSignatureForPayload);
+            return 0;
           }
 
           const firstBlockchainWallet = blockchainWallets[0];
@@ -74,7 +73,7 @@ export class WebsocketService {
           });
 
           if (hasRightToRead.isAuthorized === false) {
-            return callback(JSONRPCErrors.notHasReadRight);
+            return 0;
           }
 
           return socket.join(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`));
