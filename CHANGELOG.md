@@ -1,5 +1,14 @@
 #  Spkz node
 #  Release notes
+## v1.15.0 ( 2021-11-30 )
+
+### **fix (2):**
+ - fix(ws): remove undefined callback
+ - fix(ws): on join room catch error
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.14.0
+
 ## v1.14.0 ( 2021-11-26 )
 
 ### **feat (2):**
