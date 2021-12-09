@@ -39,11 +39,21 @@ export class WebsocketService {
 
           break;
         }
+        case 'userJoinSection': {
+          const {
+            roomId,
+            sectionId,
+          } = JSON.parse(message);
+          this.server.to(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`)).emit('userJoinSection', message);
+          break;
+        }
         default:
           break;
       }
     });
+
     redisService.subscribe('spkz-message');
+    redisService.subscribe('userJoinSection');
 
     this.server.on('connection', (socket) => {
       socket.on('joinRoom', async (params) => {
