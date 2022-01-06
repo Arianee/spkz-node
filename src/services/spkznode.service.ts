@@ -203,6 +203,9 @@ export class SpkzNodeService {
           });
           const user: SectionUser = sectionUser.toJSON() as SectionUser;
           user.userProfile = { payload: roomUser.payload };
+
+          redisService.publish('userJoinSection', JSON.stringify(user));
+
           return user;
         },
         updateLastViewed: async (sectionUserSDK: SectionUserSDK) => SectionUser.update({

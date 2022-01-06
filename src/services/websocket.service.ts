@@ -3,7 +3,10 @@ import { utils } from '@arianee/spkz-sdk/services/utils';
 import { requiredDefined } from '@arianee/spkz-sdk/helpers/required/required';
 import { createHash } from 'crypto';
 import { createServer } from 'http';
+import * as Sentry from '@sentry/node';
 import redisService from './redis.service';
+
+Sentry.init({ dsn: 'https://a01095ebaaef4062a8f2ce84d245ab01@o343653.ingest.sentry.io/6011871' });
 
 export class WebsocketService {
   private port = parseInt(process.env.PORT, 10) || 3001;
@@ -29,21 +32,36 @@ export class WebsocketService {
     });
 
     redisService.redisClient.on('message', (channel, message) => {
-      switch (channel) {
-        case 'spkz-message': {
-          const {
-            roomId,
-            sectionId,
-          } = JSON.parse(message);
-          this.server.to(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`)).emit('message', message);
+      try {
+        switch (channel) {
+          case 'spkz-message': {
+            const {
+              roomId,
+              sectionId,
+            } = JSON.parse(message);
+            this.server.to(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`)).emit('message', message);
 
-          break;
+            break;
+          }
+          case 'userJoinSection': {
+            const {
+              roomId,
+              sectionId,
+            } = JSON.parse(message);
+            this.server.to(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`)).emit('userJoinSection', message);
+            break;
+          }
+          default:
+            break;
         }
-        default:
-          break;
+      } catch (e) {
+        console.error(e);
+        Sentry.captureException(e);
       }
     });
+
     redisService.subscribe('spkz-message');
+    redisService.subscribe('userJoinSection');
 
     this.server.on('connection', (socket) => {
       socket.on('joinRoom', async (params) => {
@@ -79,6 +97,7 @@ export class WebsocketService {
           return socket.join(this.hashString(`${process.env.CHAIN_ID}/${roomId}/${sectionId}`));
         } catch (e) {
           console.error(e);
+          Sentry.captureException(e);
           return e;
         }
       });
