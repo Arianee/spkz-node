@@ -1,5 +1,14 @@
 #  Spkz node
 #  Release notes
+## v1.17.0 ( 2022-01-6 )
+
+### **feat (2):**
+ - feat(sentry): add sentry in ws server
+ - feat(ws): add joinSection event in ws
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.16.0
+
 ## v1.16.0 ( 2021-12-13 )
 
 ### **feat (1):**
