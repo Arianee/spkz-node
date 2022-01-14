@@ -1,5 +1,14 @@
 #  Spkz node
 #  Release notes
+## v1.18.0 ( 2022-01-14 )
+
+### **fix (2):**
+ - fix(userProfile): update userProfile model + object sent via ws
+ - fix(userProfile): fix casse in userprofile
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.17.0
+
 ## v1.17.0 ( 2022-01-6 )
 
 ### **feat (2):**
