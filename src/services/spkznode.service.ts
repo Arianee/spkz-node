@@ -127,7 +127,7 @@ export class SpkzNodeService {
         getUsers: async (sectionUserGet: SectionUserGet) => {
           try {
             const [sectionUsers] = await sequelizeInstance().query(`
-              SELECT "roomUsers".payload AS userProfile, "roomUsers".* FROM "sectionUsers"
+              SELECT "roomUsers".payload AS "userProfile", "roomUsers".* FROM "sectionUsers"
               LEFT JOIN
               "roomUsers"
               ON
@@ -202,7 +202,7 @@ export class SpkzNodeService {
             },
           });
           const user: SectionUser = sectionUser.toJSON() as SectionUser;
-          user.userProfile = { payload: roomUser.payload };
+          user.userProfile = roomUser.payload;
 
           redisService.publish('userJoinSection', JSON.stringify(user));
 

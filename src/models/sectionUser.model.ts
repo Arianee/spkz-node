@@ -23,9 +23,7 @@ export class SectionUser extends Model {
 
   lastViewed: Date;
 
-  userProfile?: {
-    payload: {}
-  }
+  userProfile?: any;
 }
 
 export const attributesSectionUser = {
