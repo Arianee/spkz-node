@@ -1,5 +1,13 @@
 #  Spkz node
 #  Release notes
+## v1.19.0 ( 2022-01-17 )
+
+### **chore (1):**
+ - chore(sdk): bump sdk to get new signature
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.18.0
+
 ## v1.18.0 ( 2022-01-14 )
 
 ### **fix (2):**
