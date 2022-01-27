@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/node';
 import morgan from 'morgan';
 import { SpkzNodeService } from './services/spkznode.service';
 import { morganLogger } from './helpers/morgaLogger';
+import tokens from './routes/tokens.route';
 
 const express = require('express');
 const packageJSON = require('../package.json');
@@ -22,6 +23,9 @@ app.use(morgan(morganLogger, { immediate: true }));
 app.get(`${process.env.CONTEXT_PATH}/ping`, (req: any, res: any) => {
   res.send('pong');
 });
+
+app.use(`${process.env.CONTEXT_PATH}/tokens`, tokens);
+
 app.get(`${process.env.CONTEXT_PATH}/version`, (req, res) => {
   res.send(packageJSON.version);
 });
