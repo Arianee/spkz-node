@@ -1,5 +1,19 @@
 #  Spkz node
 #  Release notes
+## v1.20.0 ( 2022-01-27 )
+
+### **fix (1):**
+ - fix(sdk): update sdk with new nodes
+
+### **chore (1):**
+ - chore(sdk): Bump SDK 1.6.1643200504
+
+### **feat (1):**
+ - feat(route): add a get route for ERC20&#x2F;ERC721 infos
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.19.0
+
 ## v1.19.0 ( 2022-01-17 )
 
 ### **chore (1):**
