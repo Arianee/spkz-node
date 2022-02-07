@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import { SpkzNodeService } from './services/spkznode.service';
 import { morganLogger } from './helpers/morgaLogger';
 import tokens from './routes/tokens.route';
+import unlock from './routes/unlock.route';
 
 const express = require('express');
 const packageJSON = require('../package.json');
@@ -25,6 +26,7 @@ app.get(`${process.env.CONTEXT_PATH}/ping`, (req: any, res: any) => {
 });
 
 app.use(`${process.env.CONTEXT_PATH}/tokens`, tokens);
+app.use(`${process.env.CONTEXT_PATH}/unlock`, unlock);
 
 app.get(`${process.env.CONTEXT_PATH}/version`, (req, res) => {
   res.send(packageJSON.version);
