@@ -1,5 +1,19 @@
 #  Spkz node
 #  Release notes
+## v1.21.0 ( 2022-02-9 )
+
+### **chore (4):**
+ - chore(package): bump spkz sdk for optimism provider
+ - chore(package): rebump spkz sdk
+ - chore(package): bump spkz sdk
+ - chore(sdk): Bump SDK 1.6.0-SNAPSHOT.1643291903
+
+### **feat (1):**
+ - feat(unlock): add &#x2F;unlock&#x2F;:chainId&#x2F;:address endpoint
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.20.0
+
 ## v1.20.0 ( 2022-01-27 )
 
 ### **fix (1):**
