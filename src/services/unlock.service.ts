@@ -6,9 +6,11 @@ interface PublicLockVersionResult {
   success: boolean;
   details?: string;
   publicLockVersion?: string;
+  symbol?: string;
+  name?: string;
 }
 
-export const tryGetPublicLockVersion = async (chainId: string,
+export const tryGetLockInfos = async (chainId: string,
   address: string): Promise<PublicLockVersionResult> => {
   assert(chainId, 'chainId must be defined');
   assert(address, 'contract address must be defined');
@@ -21,10 +23,11 @@ export const tryGetPublicLockVersion = async (chainId: string,
   }
   const lockContract = new web3Provider.eth.Contract(lockAbi as any, address);
 
-  const publicLockVersion = await lockContract.methods
-    .publicLockVersion()
-    .call()
-    .catch(() => null);
+  const [symbol, name, publicLockVersion] = await Promise.all([
+    lockContract.methods.symbol().call().catch('LOCK'),
+    lockContract.methods.name().call().catch('LOCK'),
+    lockContract.methods.publicLockVersion().call().catch(null),
+  ]);
 
   if (!publicLockVersion) {
     return {
@@ -37,5 +40,7 @@ export const tryGetPublicLockVersion = async (chainId: string,
   return {
     success: true,
     publicLockVersion,
+    symbol,
+    name,
   };
 };

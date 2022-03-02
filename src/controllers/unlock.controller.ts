@@ -1,21 +1,23 @@
-import { tryGetPublicLockVersion } from '../services/unlock.service';
+import { tryGetLockInfos } from '../services/unlock.service';
 
 /**
- * Returns the public lock version of a Lock contract
+ * Returns the symbol, name and public lock version of a Lock contract
  * Note: a contract is deemed valid (i.e. is a lock contract) if it implements publicLockVersion
  * @param req express request
  * @param res express response
  */
-export const getPublicLockVersion = async (req, res) => {
+export const getLockInfos = async (req, res) => {
   const { chainId, address } = req.params;
 
   try {
-    const { success, details, publicLockVersion } = await tryGetPublicLockVersion(chainId, address);
+    const {
+      success, details, publicLockVersion, name, symbol,
+    } = await tryGetLockInfos(chainId, address);
 
     if (!success) {
       res.status(404).send({ details });
     } else {
-      res.send({ publicLockVersion });
+      res.send({ publicLockVersion, name, symbol });
     }
   } catch (e) {
     res.status(400).send({ details: e.message });
