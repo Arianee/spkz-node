@@ -1,5 +1,19 @@
 #  Spkz node
 #  Release notes
+## v1.22.0 ( 2022-03-3 )
+
+### **chore (3):**
+ - chore(spkzSdk): bump spkz sdk
+ - chore(sdk): bump spkz sdk
+ - chore(docker): Version Node 14
+
+### **feat (2):**
+ - feat(unlock): endpoint returns more infos
+ - feat(sdk): update
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.21.0
+
 ## v1.21.0 ( 2022-02-9 )
 
 ### **chore (4):**
