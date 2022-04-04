@@ -1,5 +1,14 @@
 #  Spkz node
 #  Release notes
+## v1.23.0 ( 2022-04-4 )
+
+### **chore (2):**
+ - chore(dependencies): bump spkz sdk
+ - chore(dependencies): bump spkz sdk
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.22.0
+
 ## v1.22.0 ( 2022-03-3 )
 
 ### **chore (3):**
