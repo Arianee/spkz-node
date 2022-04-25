@@ -58,5 +58,26 @@ services:
       - 3001:3001
     depends_on:
       - redis-ws
+  spkz-push-notification:
+    build:
+      context: ./
+      dockerfile: Dockerfile.pushNotification.local
+    image: spkz-push-notification
+    container_name: spkz-push-notification
+    environment:
+      - REDIS_URL=redis://redis-ws:6379
+      - spkzEnv=test
+      - DB_NAME=spkz-node
+      - DB_USER=spkz
+      - DB_PASSWORD=spkz
+      - DB_HOST=postgres-spkz-node
+      - DB_PORT=5432
+      - DB_SCHEMA=public
+      - DB_LOGGING=false
+    volumes:
+      - ./:/home/api
+    depends_on:
+      - redis-ws
+      - postgres-spkz-node
 volumes:
   postgres-volume-spkz-node:
