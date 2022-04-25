@@ -1,0 +1,5 @@
+FROM node:14-alpine3.15
+
+WORKDIR /home/api
+
+ENTRYPOINT ["npm", "run", "start:pushnotification:w"]
