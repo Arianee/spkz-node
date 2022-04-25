@@ -6,6 +6,7 @@ import { SpkzNodeService } from './services/spkznode.service';
 import { morganLogger } from './helpers/morgaLogger';
 import tokens from './routes/tokens.route';
 import unlock from './routes/unlock.route';
+import { SignService } from './services/sign.service';
 
 const express = require('express');
 const packageJSON = require('../package.json');
@@ -31,6 +32,17 @@ app.use(`${process.env.CONTEXT_PATH}/unlock`, unlock);
 app.get(`${process.env.CONTEXT_PATH}/version`, (req, res) => {
   res.send(packageJSON.version);
 });
+
+app.get(`${process.env.CONTEXT_PATH}/publicKey`, (req, res) => {
+  try {
+    const signService = new SignService();
+    const publicKey = signService.getActivePublicKey();
+    res.status(200).send(publicKey);
+  } catch {
+    res.status(500).send('No signer set for this node, PRIVATE_KEYS environment variable must be set');
+  }
+});
+
 app.post(`${process.env.CONTEXT_PATH}/spkz/rpc`, (new SpkzNodeService().getJSONRPC()));
 
 app.use(Sentry.Handlers.errorHandler());
