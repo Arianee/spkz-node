@@ -24,6 +24,7 @@ services:
       - CHAIN_ID=80001
       - REDIS_URL=redis://redis-ws:6379
       - spkzEnv=test
+      - PRIVATE_KEYS=[{"privateKey":"91101d37ff7c0d02229ec31faf77ad91acf7ddaea65d6d7bf8ff40367f5f4434","startUsingTimestamp":0}]
     ports:
       - 3000:3000
     depends_on:
@@ -74,6 +75,7 @@ services:
       - DB_PORT=5432
       - DB_SCHEMA=public
       - DB_LOGGING=false
+      - PRIVATE_KEYS=[{"privateKey":"91101d37ff7c0d02229ec31faf77ad91acf7ddaea65d6d7bf8ff40367f5f4434","startUsingTimestamp":0}]
     volumes:
       - ./:/home/api
     depends_on:
