@@ -82,7 +82,7 @@ commands:
         default: "dev"
       private-keys:
         type: string
-        default: "[]"
+        default: $PRIVATE_KEYS_DEV
 
     steps:
       - run:
