@@ -35,7 +35,7 @@
     "node": ">=14.15.0"
   },
   "dependencies": {
-    "@arianee/spkz-sdk": "1.6.0-SNAPSHOT.1648729594",
+    "@arianee/spkz-sdk": "1.6.0-SNAPSHOT.1651129709",
     "@sentry/node": "^6.19.6",
     "axios": "^0.21.4",
     "cors": "^2.8.5",
