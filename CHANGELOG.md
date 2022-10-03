@@ -1,5 +1,23 @@
 #  Spkz node
 #  Release notes
+## v1.24.0 ( 2022-10-3 )
+
+### **feat (3):**
+ - feat(gcpTraces): add gcp traces + logs only for prod + NODE_ENV
+ - feat(pushNotification): create the signing service
+ - feat(pushNotifications): create subproject to communicate with endpoints
+
+### **chore (2):**
+ - chore(sdk): bump spkz sdk
+ - chore(sentry): Upgrade sentry
+
+### **fix (2):**
+ - fix(ci): use same private keys for UAT and DEV
+ - fix(circleci): invalid gcloud command options
+
+### **release (1):**
+ - release(version): Increase next develop version of v1.23.0
+
 ## v1.23.0 ( 2022-04-4 )
 
 ### **chore (2):**
