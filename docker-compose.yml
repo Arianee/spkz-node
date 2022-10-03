@@ -24,6 +24,7 @@ services:
       - CHAIN_ID=80001
       - REDIS_URL=redis://redis-ws:6379
       - spkzEnv=test
+      - PRIVATE_KEYS=[{"privateKey":"91101d37ff7c0d02229ec31faf77ad91acf7ddaea65d6d7bf8ff40367f5f4434","startUsingTimestamp":0}]
     ports:
       - 3000:3000
     depends_on:
@@ -58,5 +59,27 @@ services:
       - 3001:3001
     depends_on:
       - redis-ws
+  spkz-push-notification:
+    build:
+      context: ./
+      dockerfile: Dockerfile.pushNotification.local
+    image: spkz-push-notification
+    container_name: spkz-push-notification
+    environment:
+      - REDIS_URL=redis://redis-ws:6379
+      - spkzEnv=test
+      - DB_NAME=spkz-node
+      - DB_USER=spkz
+      - DB_PASSWORD=spkz
+      - DB_HOST=postgres-spkz-node
+      - DB_PORT=5432
+      - DB_SCHEMA=public
+      - DB_LOGGING=false
+      - PRIVATE_KEYS=[{"privateKey":"91101d37ff7c0d02229ec31faf77ad91acf7ddaea65d6d7bf8ff40367f5f4434","startUsingTimestamp":0}]
+    volumes:
+      - ./:/home/api
+    depends_on:
+      - redis-ws
+      - postgres-spkz-node
 volumes:
   postgres-volume-spkz-node:

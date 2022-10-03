@@ -1,6 +1,6 @@
 {
   "name": "spkz-node",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "node for spkz by arianee",
   "main": "dist/server.js",
   "scripts": {
@@ -8,6 +8,8 @@
     "start:prod": "npm run db:migrate && node dist/server.js",
     "start:websocket": "node dist/server.notification.js",
     "start:websocket:w": "nodemon --config nodemon.notification.json",
+    "start:pushnotification": "node dist/server.pushNotification.js",
+    "start:pushnotification:w": "nodemon --config nodemon.pushNotification.json",
     "build": "npm run build:migrate && tsc",
     "build:migrate": "tsc --project tsconfig.migrate.json",
     "build:simple": "tsc",
@@ -15,7 +17,7 @@
     "db:migrate": "sequelize db:migrate",
     "lint": "gitool -cl=1 && eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
-    "test": "npm run lint",
+    "test": "npm run lint && jest --verbose --coverage",
     "test:u": "jest --runInBand --u --coverage",
     "changelog": "gitool -po=./CHANGELOG.md --pn='Spkz node'",
     "release": "npm run release:minor",
@@ -33,8 +35,9 @@
     "node": ">=14.15.0"
   },
   "dependencies": {
-    "@arianee/spkz-sdk": "1.6.0-SNAPSHOT.1648729594",
-    "@sentry/node": "^6.13.3",
+    "@arianee/spkz-sdk": "1.6.0-SNAPSHOT.1651129709",
+    "@google-cloud/trace-agent": "^7.1.2",
+    "@sentry/node": "^6.19.6",
     "axios": "^0.21.4",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
